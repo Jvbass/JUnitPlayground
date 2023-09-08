@@ -2,10 +2,11 @@ package cl.jpino.junit5app.models;
 
 import cl.jpino.junit5app.exceptions.DineroInsuficienteException;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.condition.DisabledIfSystemProperties;
+import org.junit.jupiter.api.condition.*;
 import org.w3c.dom.ls.LSOutput;
 
 import java.math.BigDecimal;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -148,4 +149,56 @@ class CuentaTest {
                 });
     }
 
+    //Test Condicionales
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void testOnlyWindows(){
+    }
+
+    @Test
+    @EnabledOnOs({OS.LINUX, OS.MAC})
+    void testOnLinuxMac(){
+    }
+
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void testNoWindows(){
+    }
+
+    @Test
+    @EnabledOnJre(JRE.JAVA_8)
+    void soloJk8() {
+    }
+
+    @Test
+    @EnabledOnJre(JRE.OTHER)
+    void testOtroJre() {
+    }
+
+    @Test
+    void imprimirSystemProperties() {
+        Properties properties =  System.getProperties();
+        properties.forEach((k, v)->System.out.println(k + " : " + v));
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named="user.country", matches="CL")
+    void testSystemCountry(){
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named="java.version", matches=".*17.*")
+        //.* 17.* todas las versiones desde JRE 17. sino poner la especifica 17.0.1
+    void testJavaVersion(){
+    }
+
+    @Test
+    @DisabledIfSystemProperty(named = "os.arch", matches=".*32.*")
+    void testNo32() {
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "ENV", matches = "dev")
+    void testDev() {
+    }
 }
