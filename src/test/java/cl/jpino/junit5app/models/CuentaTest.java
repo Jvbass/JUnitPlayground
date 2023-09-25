@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
 class CuentaTest {
     Cuenta cuenta;
@@ -96,7 +97,7 @@ class CuentaTest {
     @Test
     @DisplayName("TDD con metodos en clase cuenta")
     void testDineroInsuficienteException() {
-     //   Cuenta cuenta = new Cuenta("Juan", new BigDecimal("1000.12345"));
+ //   Cuenta cuenta = new Cuenta("Juan", new BigDecimal("1000.12345"));
         Exception exception = assertThrows(DineroInsuficienteException.class, () -> {
             cuenta.debito(new BigDecimal(1500));
         });
@@ -150,7 +151,7 @@ class CuentaTest {
                 });
     }
 
-    //Test Condicionales
+//Test Condicionales
     @Test
     @EnabledOnOs(OS.WINDOWS)
     void testOnlyWindows(){
@@ -203,7 +204,7 @@ class CuentaTest {
     void testDev() {
     }
 
-    //Test condicional a varialbes de ambiente
+//Test condicional a varialbes de ambiente
     @Test
     void imprimirVariablesAmbiente() {
         Map<String, String> getenv = System.getenv();
@@ -227,5 +228,33 @@ class CuentaTest {
     @Test
     @DisabledIfEnvironmentVariable(named = "ENVIROMENT", matches = "prod")
     void testEnvProdDisabled(){
+    }
+
+// Suposiciones Assumptions
+
+    @Test
+    @DisplayName("assumeTrue test Saldo Cuenta Dev")
+    void testSaldoCuentaDev() {
+        boolean esDev = "dev".equals(System.getProperty("ENV"));
+        assumeTrue(esDev);
+        // todo lo que este abajo de esta linea donde esta assumeTrue se deshabilita si el boolean es falso
+
+        assertEquals(1000.12345, cuenta.getSaldo().doubleValue());
+        assertNotNull(cuenta.getSaldo());
+        assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO) < 0);
+    }
+
+    @Test
+    @DisplayName("Assuming that ENV = dev")
+    void testSaldoCuentaDev2() {
+        boolean esDev = "dev".equals(System.getProperty("ENV"));
+        assumingThat(esDev, ()->{
+            // todo lo que este abajo de esta linea donde esta assumeTrue se deshabilita si el boolean es falso
+
+            assertEquals(1000.12345, cuenta.getSaldo().doubleValue());
+            assertNotNull(cuenta.getSaldo());
+            assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO) < 0);
+        });
+
     }
 }
