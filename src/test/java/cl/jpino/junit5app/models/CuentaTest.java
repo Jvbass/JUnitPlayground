@@ -26,6 +26,12 @@ class CuentaTest {
         System.out.println("finalizando el metodo.");
     }
 
+
+    @Nested
+    @DisplayName("Test de cuenta bancaria")
+    class testCuentaBancaria{
+
+
     @Test
     @DisplayName("probando assertNotNull y assertEquals con variables")
     void testNombreCuenta() {
@@ -150,111 +156,139 @@ class CuentaTest {
                             .anyMatch(c -> c.getPersona().equals("Juan")));
                 });
     }
+    }
 
 //Test Condicionales
-    @Test
-    @EnabledOnOs(OS.WINDOWS)
-    void testOnlyWindows(){
+
+    @Nested
+    @DisplayName("Test de SO")
+    class sistemaOperativoTest{
+        @Test
+        @EnabledOnOs(OS.WINDOWS)
+        void testOnlyWindows(){
+        }
+
+        @Test
+        @EnabledOnOs({OS.LINUX, OS.MAC})
+        void testOnLinuxMac(){
+        }
+
+        @Test
+        @DisabledOnOs(OS.WINDOWS)
+        void testNoWindows(){
+        }
     }
 
-    @Test
-    @EnabledOnOs({OS.LINUX, OS.MAC})
-    void testOnLinuxMac(){
+    @Nested
+    @DisplayName("Test de Java Version")
+    class javaVersionTest{
+        @Test
+        @EnabledOnJre(JRE.JAVA_8)
+        void soloJk8() {
+        }
+
+        @Test
+        @EnabledOnJre(JRE.OTHER)
+        void testOtroJre() {
+        }
+
+        @Test
+        @DisabledOnJre(JRE.JAVA_15)
+        void testJava15Jre() {
+        }
     }
 
-    @Test
-    @DisabledOnOs(OS.WINDOWS)
-    void testNoWindows(){
-    }
+    @Nested
+    @DisplayName("Test de propiedades de sistema")
+    class systemPropertiesTest{
+        @Test
+        void imprimirSystemProperties() {
+            Properties properties =  System.getProperties();
+            properties.forEach((k, v)->System.out.println(k + " : " + v));
+        }
 
-    @Test
-    @EnabledOnJre(JRE.JAVA_8)
-    void soloJk8() {
-    }
+        @Test
+        @EnabledIfSystemProperty(named="user.country", matches="CL")
+        void testSystemCountry(){
+        }
 
-    @Test
-    @EnabledOnJre(JRE.OTHER)
-    void testOtroJre() {
-    }
+        @Test
+        @EnabledIfSystemProperty(named="java.version", matches=".*17.*")
+            //.* 17.* todas las versiones desde JRE 17. sino poner la especifica 17.0.1
+        void testJavaVersion(){
+        }
 
-    @Test
-    void imprimirSystemProperties() {
-        Properties properties =  System.getProperties();
-        properties.forEach((k, v)->System.out.println(k + " : " + v));
-    }
+        @Test
+        @DisabledIfSystemProperty(named = "os.arch", matches=".*32.*")
+        void testNo32() {
+        }
 
-    @Test
-    @EnabledIfSystemProperty(named="user.country", matches="CL")
-    void testSystemCountry(){
-    }
-
-    @Test
-    @EnabledIfSystemProperty(named="java.version", matches=".*17.*")
-        //.* 17.* todas las versiones desde JRE 17. sino poner la especifica 17.0.1
-    void testJavaVersion(){
-    }
-
-    @Test
-    @DisabledIfSystemProperty(named = "os.arch", matches=".*32.*")
-    void testNo32() {
-    }
-
-    @Test
-    @EnabledIfSystemProperty(named = "ENV", matches = "dev")
-    void testDev() {
+        @Test
+        @EnabledIfSystemProperty(named = "ENV", matches = "dev")
+        void testDev() {
+        }
     }
 
 //Test condicional a varialbes de ambiente
-    @Test
-    void imprimirVariablesAmbiente() {
-        Map<String, String> getenv = System.getenv();
-        getenv.forEach((k,v)-> System.out.println(k+ " = " + v));
-    }
-    @Test
-    @EnabledIfEnvironmentVariable(named="JAVA_HOME", matches = ".*jdk-17.0.6.10-hotspot.*")
-    void testJavaHome(){
-    }
+    @Nested
+    @DisplayName("Test de variables de ambiente")
+    class variableDeAmbienteTest{
+        @Test
+        void imprimirVariablesAmbiente() {
+            Map<String, String> getenv = System.getenv();
+            getenv.forEach((k,v)-> System.out.println(k+ " = " + v));
+        }
+        @Test
+        @EnabledIfEnvironmentVariable(named="JAVA_HOME", matches = ".*jdk-17.0.6.10-hotspot.*")
+        void testJavaHome(){
+        }
 
-    @Test
-    @EnabledIfEnvironmentVariable(named = "NUMBER_OF_PROCESSORS", matches = "16")
-    void testProcesadores(){}
+        @Test
+        @EnabledIfEnvironmentVariable(named = "NUMBER_OF_PROCESSORS", matches = "16")
+        void testProcesadores(){}
 
-    @Test
-    @EnabledIfEnvironmentVariable(named = "ENVIROMENT", matches = "dev")
-    void testEnv(){
+        @Test
+        @EnabledIfEnvironmentVariable(named = "ENVIROMENT", matches = "dev")
+        void testEnv(){
         // CuentaTest > Edit Configurations > Enviroment Variables
+        }
+
+        @Test
+        @DisabledIfEnvironmentVariable(named = "ENVIROMENT", matches = "prod")
+        void testEnvProdDisabled(){
+        }
     }
 
-    @Test
-    @DisabledIfEnvironmentVariable(named = "ENVIROMENT", matches = "prod")
-    void testEnvProdDisabled(){
-    }
 
 // Suposiciones Assumptions
-
-    @Test
-    @DisplayName("assumeTrue test Saldo Cuenta Dev")
-    void testSaldoCuentaDev() {
-        boolean esDev = "dev".equals(System.getProperty("ENV"));
-        assumeTrue(esDev);
-        // todo lo que este abajo de esta linea donde esta assumeTrue se deshabilita si el boolean es falso
-
-        assertEquals(1000.12345, cuenta.getSaldo().doubleValue());
-        assertNotNull(cuenta.getSaldo());
-        assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO) < 0);
-    }
-
-    @Test
-    @DisplayName("Assuming that ENV = dev")
-    void testSaldoCuentaDev2() {
-        boolean esDev = "dev".equals(System.getProperty("ENV"));
-        assumingThat(esDev, ()->{
+    @Nested
+    @DisplayName("Test de suposiciones")
+    class assumptionsTests{
+        @Test
+        @DisplayName("assumeTrue test Saldo Cuenta Dev")
+        void testSaldoCuentaDev() {
+            boolean esDev = "dev".equals(System.getProperty("ENV"));
+            assumeTrue(esDev);
             // todo lo que este abajo de esta linea donde esta assumeTrue se deshabilita si el boolean es falso
 
             assertEquals(1000.12345, cuenta.getSaldo().doubleValue());
             assertNotNull(cuenta.getSaldo());
             assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO) < 0);
-        });
+        }
 
+        @Test
+        @DisplayName("Assuming that ENV = dev")
+        void testSaldoCuentaDev2() {
+            boolean esDev = "dev".equals(System.getProperty("ENV"));
+            assumingThat(esDev, ()->{
+                // todo lo que este abajo de esta linea donde esta assumeTrue se deshabilita si el boolean es falso
+
+                assertEquals(1000.12345, cuenta.getSaldo().doubleValue());
+                assertNotNull(cuenta.getSaldo());
+                assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO) < 0);
+            });
+
+        }
     }
+
 }
