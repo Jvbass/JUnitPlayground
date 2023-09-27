@@ -31,7 +31,6 @@ class CuentaTest {
     @DisplayName("Test de cuenta bancaria")
     class testCuentaBancaria{
 
-
     @Test
     @DisplayName("probando assertNotNull y assertEquals con variables")
     void testNombreCuenta() {
@@ -289,6 +288,20 @@ class CuentaTest {
             });
 
         }
+    }
+
+    // RepeatedTest para repertir pruebas cuando sea necesario, por ejemplo cuando se generan numeros aleatorios, cuando hay asincronismo, tiempos de ejecucion. etc..
+    @RepeatedTest(value = 5, name = "{displayName} - Repeticion numero {currentRepetition} de {totalRepetitions}")
+    @DisplayName("Probando Repetir en debito cuenta ")
+    void testDebitoCuentaRepetir(RepetitionInfo info) {
+        if (info.getCurrentRepetition()>=3){
+            System.out.println("Estamos en la repeticion " + info.getCurrentRepetition());
+        }
+//        cuenta = new Cuenta("Juan", new BigDecimal("1000.12345"));
+        cuenta.debito(new BigDecimal(100));
+        assertNotNull(cuenta.getSaldo());
+        assertEquals(900, cuenta.getSaldo().intValue());
+        assertEquals("900.12345", cuenta.getSaldo().toPlainString());
     }
 
 }
