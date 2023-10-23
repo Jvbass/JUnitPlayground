@@ -3,7 +3,9 @@ package cl.jpino.junit5app.models;
 import cl.jpino.junit5app.exceptions.DineroInsuficienteException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
-import org.w3c.dom.ls.LSOutput;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -82,7 +84,6 @@ class CuentaTest {
     @Test
     @DisplayName("probando con metodologia TDD, valores int y string ")
     void testDebitoCuenta() {
-//        cuenta = new Cuenta("Juan", new BigDecimal("1000.12345"));
         cuenta.debito(new BigDecimal(100));
         assertNotNull(cuenta.getSaldo());
         assertEquals(900, cuenta.getSaldo().intValue());
@@ -304,4 +305,32 @@ class CuentaTest {
         assertEquals("900.12345", cuenta.getSaldo().toPlainString());
     }
 
+
+    // Pruebas Parametrizadas : se entregan parametros para realizar pruebas, en este caso con metodo debito de la clase cuenta.
+    @ParameterizedTest(name = "numero {index} ejecutando con valor {0} - {argumentsWithNames}")
+    @ValueSource(strings = {"100", "200", "300", "500", "700", "1000.1234"})
+        //usamos String ya que double tiene limitaciones de precisión de los números de punto flotante, la representación interna de este valor puede no ser exacta y podría ser una aproximación cercana a 1000.12345
+    void testDebitoCuentaValueSource(String monto) {
+        cuenta.debito(new BigDecimal(monto));
+        assertNotNull(cuenta.getSaldo());
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+        //usamos CsvSource para entregar indice y valor.
+    @ParameterizedTest(name = "numero {index} ejecutando con valor {0} - {argumentsWithNames}")
+    @CsvSource ({"1,100", "2,200", "3,300", "4,500", "5,700", "6,1000.1234"})
+    void testDebitoCuentaCsvSource(String index, String monto) {
+        System.out.println(index + " -> " + monto);
+        cuenta.debito(new BigDecimal(monto));
+        assertNotNull(cuenta.getSaldo());
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+    }
+        //usamos CsvSource para asignar dos enteros, a y b, y una variable resultado
+    @ParameterizedTest
+    @CsvSource({ "2, 3, 3", "5, 7, 12", "10, 20, 30" })
+    void testSuma(int a, int b, int resultado) {
+        int suma = a + b;
+        assertEquals(resultado, suma);
+    }
+    
 }
