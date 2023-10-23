@@ -33,10 +33,13 @@ class CuentaTest {
     }
 
 
+    @Tag("cuenta")
     @Nested
     @DisplayName("Test de cuenta bancaria")
     class testCuentaBancaria{
 
+    @Tag("cuenta")
+    @Tag("banco")
     @Test
     @DisplayName("probando assertNotNull y assertEquals con variables")
     void testNombreCuenta() {
@@ -130,6 +133,7 @@ class CuentaTest {
         assertEquals("3000", cuenta1.getSaldo().toPlainString());
     }
 
+    @Tag("banco")
     @Test
     @DisplayName("probando anotacion Disabled y metodo de assertions 'fail' ")
     @Disabled //se salta esta prueba, como pendiente
@@ -164,6 +168,7 @@ class CuentaTest {
 
 //Test Condicionales
 
+    @Tag("so")
     @Nested
     @DisplayName("Test de SO")
     class sistemaOperativoTest{
@@ -183,6 +188,7 @@ class CuentaTest {
         }
     }
 
+    @Tag("version")
     @Nested
     @DisplayName("Test de Java Version")
     class javaVersionTest{
@@ -309,12 +315,11 @@ class CuentaTest {
         assertEquals("900.12345", cuenta.getSaldo().toPlainString());
     }
 
-
+    // Pruebas Parametrizadas : se entregan parametros para realizar pruebas, en este caso con metodo debito de la clase cuenta.
+    @Tag("param")
     @Nested
     class PruebasParametrizadasTest{
 
-
-    // Pruebas Parametrizadas : se entregan parametros para realizar pruebas, en este caso con metodo debito de la clase cuenta.
     @ParameterizedTest(name = "numero {index} ejecutando con valor {0} - {argumentsWithNames}")
     @ValueSource(strings = {"100", "200", "300", "500", "700", "1000.1234"})
         //usamos String ya que double tiene limitaciones de precisión de los números de punto flotante, la representación interna de este valor puede no ser exacta y podría ser una aproximación cercana a 1000.12345
@@ -376,6 +381,8 @@ class CuentaTest {
         assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
     }
     }
+    //Los tags permiten filtrar ejecucion de pruebas segun tags-> edit configurations/Build and run/ tag -> nombre tag
+    @Tag("param")
     @ParameterizedTest(name = "numero {index} ejecutando con valor {0} - {argumentsWithNames}")
     @MethodSource ("montoList")
     void testDebitoCuentaMetodSource(String monto) {
